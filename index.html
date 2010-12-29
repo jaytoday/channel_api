@@ -6,6 +6,8 @@ and open the template in the editor.
 <html>
     <head>
         <title></title>
+       <script src='http://code.jquery.com/jquery-1.4.4.min.js'</script> 
+        <script src='http://omnipotent.net/jquery.sparkline/1.6/jquery.sparkline.min.js.gz'></script>
         <script src='/_ah/channel/jsapi'></script>
         <script type="text/javascript">
             var token = '{{ channel_id }}';
@@ -15,17 +17,31 @@ and open the template in the editor.
 //            socket.onopen = function() {
 //                ping = window.setInterval(function() {sendMessage('ping')}, 2000);
 //            }
-            socket.onmessage = function(evt) {
-                var s = document.getElementById("s");
-                s.innerHTML += '1.' + evt.data + "<br />";
-            }
 
 //            window.setTimeout(function() {socket.onmessage({data : '{{ initial_messages }}'})}, 500);
+        
+        $(function(){
+            var s = $('#s');
+            var sparklines = $('.sparkline');
+            
+            socket.onmessage = function(evt) {
+                var s = $("#s");
+                s.append('1.' + evt.data + "<br />");
+                sparklines.append((Math.random() * 100) + ',');
+                sparkline(sparklines);
+            }
+            
+        });
         </script>
         <meta http-equiv="Content-Type" content="text/html; charset=MacRoman">
     </head>
     <body>
         {{ channel_id }}
+        
         <div id="s"></div>
+        <br/>
+        <div class="sparkline">
+         10,20,30
+        </div>
     </body>
 </html>

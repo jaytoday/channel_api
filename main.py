@@ -18,10 +18,26 @@ def create_channel():
 def send(message):
     channel.send_message("test_channel", simplejson.dumps(message))
 
-class SendMessage(webapp.RequestHandler):
+
+class BaseHandler(webapp.RequestHandler):
 
     def get(self):
-        send(self.request.get('msg','default test message'))
+        pass
+        
+    def post(self): # POST and GET use same handler, making testing easier
+        return self.get()
+
+
+class SendMessage(BaseHandler):
+
+    def get(self):
+        # TODO:
+        # when the client posts a message to return to browser via channel API,
+        # also, save to datastore (pass to background task for best performance)
+        json_str = self.request.get('json','{"foo":30,"foo2":40,"foo3":50}')
+        json_obj = simplejson.loads(json_str) # now we have a dictionary!
+        send(str(json_obj.keys()))
+    
         
 class Index(webapp.RequestHandler):
 
