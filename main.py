@@ -12,28 +12,27 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 
-def create_channel_id():
-  return channel.create_channel("sweet")
+def create_channel():
+  return channel.create_channel("test_channel")
 
 def send(message):
-    channel.send_message("sweet", simplejson.dumps(message))
+    channel.send_message("test_channel", simplejson.dumps(message))
 
-class PingEm(webapp.RequestHandler):
+class SendMessage(webapp.RequestHandler):
 
     def get(self):
-        send('This is cool ')
-        send('Really cool')
+        send(self.request.get('msg','default test message'))
         
-class MainPage(webapp.RequestHandler):
+class Index(webapp.RequestHandler):
 
     def get(self):
-        id = create_channel_id()
-        template_values = {'channel_id': id,}
-        path = os.path.join(os.path.dirname(__file__), 'test.html')
-        self.response.out.write(template.render(path, template_values))
+        channel_id = create_channel()
+        context = {'channel_id': channel_id,}
+        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        self.response.out.write(template.render(path, context))
 
-application = webapp.WSGIApplication([('/', MainPage),
-                                      ('/a', PingEm)
+application = webapp.WSGIApplication([('/', Index),
+                                      ('/send', SendMessage)
                                      ], debug=True)
 
 def main():
